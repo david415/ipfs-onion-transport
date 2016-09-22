@@ -1,25 +1,27 @@
 package torOnion
 
 import (
-	"fmt"
-	"net"
-
-	manet "gx/ipfs/QmPpRcbNUXauP3zWZ1NJMLWpe4QnmEHrd2ba2D3yqWznw7/go-multiaddr-net"
-	tpt "gx/ipfs/QmWzfrG1PUeF8mDpYfNsRL3wh5Rkgnp68LAWUB2bhuDWRL/go-libp2p-transport"
-	ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
-
 	"context"
 	"crypto/rsa"
 	"encoding/base32"
 	"encoding/pem"
+	"fmt"
 	"github.com/yawning/bulb"
 	"github.com/yawning/bulb/utils/pkcs1"
 	"golang.org/x/net/proxy"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	//manet "gx/ipfs/QmPpRcbNUXauP3zWZ1NJMLWpe4QnmEHrd2ba2D3yqWznw7/go-multiaddr-net"
+	//tpt "gx/ipfs/QmWzfrG1PUeF8mDpYfNsRL3wh5Rkgnp68LAWUB2bhuDWRL/go-libp2p-transport"
+	//ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
+	tpt "github.com/ipfs/go-libp2p-transport"
+	ma "github.com/multiformats/go-multiaddr"
+	manet "github.com/multiformats/go-multiaddr-net"
 )
 
 // IsValidOnionMultiAddr is used to validate that a multiaddr
@@ -151,11 +153,10 @@ func (t *OnionTransport) Dialer(laddr ma.Multiaddr, opts ...tpt.DialOpt) (tpt.Di
 
 // Listen creates and returns a go-libp2p-transport Listener
 func (t *OnionTransport) Listen(laddr ma.Multiaddr) (tpt.Listener, error) {
-
 	// convert to net.Addr
 	netaddr, err := laddr.ValueForProtocol(ma.P_ONION)
 	if err != nil {
-
+		return nil, fmt.Errorf("failed to get ValueForProtocol")
 	}
 
 	// retreive onion service virtport
@@ -334,4 +335,3 @@ func (c *OnionConn) LocalMultiaddr() ma.Multiaddr {
 func (c *OnionConn) RemoteMultiaddr() ma.Multiaddr {
 	return *c.raddr
 }
-

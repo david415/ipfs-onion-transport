@@ -1,13 +1,35 @@
 package torOnion
 
 import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
+	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 
-	ma "github.com/jbenet/go-multiaddr"
+	"golang.org/x/net/proxy"
+	//tpt "gx/ipfs/QmWzfrG1PUeF8mDpYfNsRL3wh5Rkgnp68LAWUB2bhuDWRL/go-libp2p-transport"
+	//ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
+	ma "github.com/multiformats/go-multiaddr"
 )
+
+// MortalService can be killed at any time.
+type MortalService struct {
+	network            string
+	address            string
+	connectionCallback func(net.Conn) error
+
+	conns     []net.Conn
+	stopping  bool
+	listener  net.Listener
+	waitGroup *sync.WaitGroup
+}
 
 // NewMortalService creates a new MortalService
 func NewMortalService(network, address string, connectionCallback func(net.Conn) error) *MortalService {
@@ -98,6 +120,14 @@ func (l *MortalService) handleConnection(conn net.Conn, id int) error {
 	return nil
 }
 
+type AccumulatingListener struct {
+	net, address    string
+	buffer          bytes.Buffer
+	mortalService   *MortalService
+	hasProtocolInfo bool
+	hasAuthenticate bool
+}
+
 func NewAccumulatingListener(net, address string) *AccumulatingListener {
 	l := AccumulatingListener{
 		net:             net,
@@ -109,7 +139,7 @@ func NewAccumulatingListener(net, address string) *AccumulatingListener {
 }
 
 func (a *AccumulatingListener) Start() {
-	a.mortalService = service.NewMortalService(a.net, a.address, a.SessionWorker)
+	a.mortalService = NewMortalService(a.net, a.address, a.SessionWorker)
 	err := a.mortalService.Start()
 	if err != nil {
 		panic(err)
@@ -155,27 +185,35 @@ func (a *AccumulatingListener) SessionWorker(conn net.Conn) error {
 }
 
 func TestOnionTransport(t *testing.T) {
+	fmt.Println("test onion transport")
 	keysDir, err := ioutil.TempDir("", "keys")
 	onionKeyPath := filepath.Join(keysDir, "timaq4ygg2iegci7")
 	onionKey := strings.Repeat("A", 825)
-	if err := ioutil.WriteFile(onionKeyPath, onionKey, 0666); err != nil {
-		t.Fail(err)
+	if err := ioutil.WriteFile(onionKeyPath, []byte(onionKey), 0666); err != nil {
+		t.Error(err)
 	}
-
 	auth := proxy.Auth{
 		User:     "",
 		Password: "",
 	}
-
 	controlNet := "tcp"
 	controlAddr := "127.0.0.1:2451"
 	listener := NewAccumulatingListener(controlNet, controlAddr)
-	t := NewOnionTransport(controlNet, controlAddr, &auth, keysDir)
-
-	multiAddr, err := NewMultiaddr("/onion/timaq4ygg2iegci7:80")
+	listener.Start()
+	transport, err := NewOnionTransport(controlNet, controlAddr, &auth, keysDir)
 	if err != nil {
-		t.Fail(err)
+		t.Error(err)
 	}
-	_ := t.Listen(multiAddr)
-	fmt.Println("accumulated tor control port data", t.buffer.String())
+	multiAddr, err := ma.NewMultiaddr("/onion/timaq4ygg2iegci7:80")
+	if err != nil {
+		t.Error(err)
+	}
+	//var transportListener tpt.Listener
+	//transportListener, err = transport.Listen(multiAddr)
+	_, err = transport.Listen(multiAddr)
+	if err != nil {
+		t.Error(err)
+	}
+	//fmt.Println("transport listener", transportListener)
+	fmt.Println("accumulated tor control port data", listener.buffer.String())
 }
