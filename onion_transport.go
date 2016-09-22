@@ -16,12 +16,12 @@ import (
 	"strconv"
 	"strings"
 
-	//manet "gx/ipfs/QmPpRcbNUXauP3zWZ1NJMLWpe4QnmEHrd2ba2D3yqWznw7/go-multiaddr-net"
-	//tpt "gx/ipfs/QmWzfrG1PUeF8mDpYfNsRL3wh5Rkgnp68LAWUB2bhuDWRL/go-libp2p-transport"
-	//ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
-	tpt "github.com/ipfs/go-libp2p-transport"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr-net"
+	manet "gx/ipfs/QmPpRcbNUXauP3zWZ1NJMLWpe4QnmEHrd2ba2D3yqWznw7/go-multiaddr-net"
+	tpt "gx/ipfs/QmWzfrG1PUeF8mDpYfNsRL3wh5Rkgnp68LAWUB2bhuDWRL/go-libp2p-transport"
+	ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
+	//tpt "github.com/ipfs/go-libp2p-transport"
+	//ma "github.com/multiformats/go-multiaddr"
+	//manet "github.com/multiformats/go-multiaddr-net"
 )
 
 // IsValidOnionMultiAddr is used to validate that a multiaddr
