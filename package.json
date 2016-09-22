@@ -1,0 +1,14 @@
+{
+  "author": "user",
+  "bugs": {
+    "url": "https://github.com/david415/ipfs-onion-transport/issues"
+  },
+  "gx": {
+    "dvcsimport": "github.com/david415/ipfs-onion-transport"
+  },
+  "gxVersion": "0.8.0",
+  "language": "go",
+  "license": "",
+  "name": "ipfs-onion-transport",
+  "version": "0.0.0"
+}
