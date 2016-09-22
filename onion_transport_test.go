@@ -15,8 +15,8 @@ import (
 
 	"golang.org/x/net/proxy"
 	//tpt "gx/ipfs/QmWzfrG1PUeF8mDpYfNsRL3wh5Rkgnp68LAWUB2bhuDWRL/go-libp2p-transport"
-	ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
-	//ma "github.com/multiformats/go-multiaddr"
+	//ma "gx/ipfs/QmYzDkkgAEmrcNzFCiYo6L1dTX4EAG1gZkbtdbd9trL4vd/go-multiaddr"
+	ma "github.com/multiformats/go-multiaddr"
 )
 
 // MortalService can be killed at any time.
