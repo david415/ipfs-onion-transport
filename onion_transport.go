@@ -127,13 +127,13 @@ func (t *OnionTransport) loadKeys() (map[string]*rsa.PrivateKey, error) {
 			if err != nil {
 				return err
 			}
-			onionName := strings.Replace(filepath.Base(file.Name()), ".onion_key", "", 1)
-			block, _ := pem.Decode(key)
-			privKey, _, err := pkcs1.DecodePrivateKeyDER(block.Bytes)
+			if n > 825 || n < 820 {
+				return fmt.Errorf("Wrong size key-blob")
+			}
 			if err != nil {
 				return err
 			}
-			keys[onionName] = privKey
+			keys[onionName] = key
 		}
 		return nil
 	}
